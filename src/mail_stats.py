@@ -44,11 +44,9 @@ class mail_stats(MongoConnect): #mongoconnect derives from Configurable!
 
     mails = self.db[coll].find( {} )
     for i in mails:
-      print str(i)
       today = datetime.now(pytz.utc)
       dat = i['Header-Fields']['Date']
       dat['tzinfo'] = pytz.utc
-      log.debug(str(dat))
       maildate = datetime(**dat)
 
       if today-timedelta(days=30) < maildate:
