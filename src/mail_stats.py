@@ -3,21 +3,22 @@ from genericore import MongoConnect
 from datetime import datetime,timedelta,tzinfo
 import logging,pytz
 
-MODULE_NAME = 'mail_stats'
 
-log = logging.getLogger(MODULE_NAME)
 
+log = logging.getLogger('mail_stats')
 DEFAULT_CONFIG = {
-  MODULE_NAME : {
     "database" : {
-      "collection" : MODULE_NAME
+      "collection" : 'mail_stats'
     }
   }
-}
 
-class mail_stats(MongoConnect): #mongoconnect derives from Configurable!
+class MailStats(MongoConnect): #mongoconnect derives from Configurable!
+  """ MailStats is a class which performs statistical analysis of given
+  mails (see process() """
   
-  def __init__(self,conf=None):
+  def __init__(self,MODULE_NAME,conf=None):
+    self.NAME =  MODULE_NAME
+    newConfig = { MODULE_NAME : DEFAULT_CONFIG }
     MongoConnect.__init__(self,MODULE_NAME,DEFAULT_CONFIG) 
     #TODO write a Genericore Class which provides stuff like AMQP or MongoDB
     self.load_conf(conf)
@@ -40,7 +41,7 @@ class mail_stats(MongoConnect): #mongoconnect derives from Configurable!
     problem
     """
     ret= {'month': 0,'week':0,'day':0,'hour':0}
-    coll = self.config[MODULE_NAME]['database']['collection']
+    coll = self.config[self.NAME]['database']['collection']
 
     mails = self.db[coll].find( {} )
     for i in mails:
@@ -62,7 +63,7 @@ class mail_stats(MongoConnect): #mongoconnect derives from Configurable!
 
     
   def process(self,msg):
-    coll = self.config[MODULE_NAME]['database']['collection']
+    coll = self.config[self.NAME]['database']['collection']
     mail = msg['data']
     db = self.db
     hdr = mail['Header-Fields']
