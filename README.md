@@ -1,3 +1,5 @@
+migrated to new location: https://codeberg.org/shackspace/genericore-mail_stats
+
 Mail\_stats
 =========
 
